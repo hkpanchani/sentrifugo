@@ -12,10 +12,10 @@ jobs:
     - name: executing remote ssh commands using password
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ SSH_HOST }}
-        username: ${{ SSH_USER }}
-        password: ${{ SSH_PASSWORD }}
-        port: ${{ SSH_PORT }}
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        password: ${{ secrets.SSH_PASSWORD }}
+        port: ${{ secrets.SSH_PORT }}
         script: |
           cd /var/www/html/
           git pull origin master
