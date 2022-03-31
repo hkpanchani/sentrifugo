@@ -1,0 +1,71 @@
+name: Install Sentrifugo
+on: 
+  workflow_dispatch:
+    inputs:
+      SSH_HOST:
+        description: Ip address of the server
+        required: true
+      SSH_USERNAME:
+        description: Root user of Server
+        default: root
+        required: true
+      SSH_PASSWORD:
+        description: SSH password of the root user
+        required: true
+      SSH_PORT:
+        description: Port number for SSH Service
+        default: "22"
+        required: true
+      DATABASE_NAME:
+        description: Set the name of the database to be used
+        default: sentrifugo
+        required: true
+      DATABASE_ROOT_PASSWORD:
+        description: Set password for database root user
+        required: true
+jobs:
+  deploy:
+    name: Install on remote Server
+    runs-on: ubuntu-latest
+    steps:
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ github.event.inputs.SSH_HOST }}
+        username: ${{ github.event.inputs.SSH_USERNAME }}
+        password: ${{ github.event.inputs.SSH_PASSWORD }}
+        port: ${{ secrets.SSH_PORT }}
+        script: |
+          sudo apt update
+          sudo apt upgrade -y
+          sudo apt install apache2 -y
+          sudo apt install mariadb-server -y
+          sudo apt install php libapache2-mod-php php-mysql -y
+          apt install php7.4-gd -y
+          apt install php-gd -y
+          systemctl restart apache2
+
+          mysql -u root <<EOF
+          SET PASSWORD FOR root@localhost = PASSWORD('${{ github.event.inputs.DATABASE_ROOT_PASSWORD }}');
+          FLUSH PRIVILEGES;
+          EOF
+
+          mysql -u root -e "create database ${{ github.event.inputs.DATABASE_NAME }}";
+
+          cd /var/www/html/
+          rm -rf *
+          apt install git
+          git clone https://github.com/hkpanchani/sentrifugo.git .
+
+          chown -R www-data:www-data /var/www/html/public/downloads
+          chown -R www-data:www-data /var/www/html/public/uploads
+          chown -R www-data:www-data /var/www/html/public/email_constants.php
+          chown -R www-data:www-data /var/www/html/public/emptabconfigure.php
+          chown -R www-data:www-data /var/www/html/public/site_constants.php
+          chown -R www-data:www-data /var/www/html/public/db_constants.php
+          chown -R www-data:www-data /var/www/html/public/application_constants.php
+          chown -R www-data:www-data /var/www/html/public/mail_settings_constants.php
+          chown -R www-data:www-data /var/www/html/logs/application.log
+          chown -R www-data:www-data /var/www/html/application/modules/default/plugins/AccessControl.php
+          chown -R www-data:www-data /var/www/html/install
+          echo "Sussessfully Deployed"
