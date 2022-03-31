@@ -34,7 +34,7 @@ jobs:
         host: ${{ github.event.inputs.SSH_HOST }}
         username: ${{ github.event.inputs.SSH_USERNAME }}
         password: ${{ github.event.inputs.SSH_PASSWORD }}
-        port: ${{ secrets.SSH_PORT }}
+        port: ${{ github.event.inputs.SSH_PORT }}
         script: |
           sudo apt update
           sudo apt upgrade -y
