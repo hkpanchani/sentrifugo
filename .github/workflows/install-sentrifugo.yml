@@ -54,7 +54,7 @@ jobs:
 
           cd /var/www/html/
           rm -rf *
-          apt install git
+          apt install git -y
           git clone https://github.com/hkpanchani/sentrifugo.git .
           git config pull.rebase false
 
