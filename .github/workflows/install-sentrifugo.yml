@@ -2,20 +2,20 @@ name: Install Sentrifugo
 on: 
   workflow_dispatch:
     inputs:
-      SSH_HOST:
-        description: Ip address of the server
-        required: true
-      SSH_USERNAME:
-        description: Root user of Server
-        default: root
-        required: true
-      SSH_PASSWORD:
-        description: SSH password of the root user
-        required: true
-      SSH_PORT:
-        description: Port number for SSH Service
-        default: "22"
-        required: true
+      # SSH_HOST:
+      #   description: Ip address of the server
+      #   required: true
+      # SSH_USERNAME:
+      #   description: Root user of Server
+      #   default: root
+      #   required: true
+      # SSH_PASSWORD:
+      #   description: SSH password of the root user
+      #   required: true
+      # SSH_PORT:
+      #   description: Port number for SSH Service
+      #   default: "22"
+      #   required: true
       DATABASE_NAME:
         description: Set the name of the database to be used
         default: sentrifugo
@@ -31,10 +31,10 @@ jobs:
     - name: executing remote ssh commands using password
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ github.event.inputs.SSH_HOST }}
-        username: ${{ github.event.inputs.SSH_USERNAME }}
-        password: ${{ github.event.inputs.SSH_PASSWORD }}
-        port: ${{ github.event.inputs.SSH_PORT }}
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        password: ${{ secrets.SSH_PASSWORD }}
+        port: ${{ secrets.SSH_PORT }}
         script: |
           sudo apt update
           sudo apt upgrade -y
@@ -54,7 +54,7 @@ jobs:
 
           cd /var/www/html/
           rm -rf *
-          apt install git -y
+          apt install git -y  
           git clone https://github.com/hkpanchani/sentrifugo.git .
           git config pull.rebase false
 
